@@ -1,0 +1,9 @@
+.packages
+a.out
+pubspec.lock
+yarn.lock
+yarn-error.log
+
+.pub/
+node_modules/
+demo/web/vendor*

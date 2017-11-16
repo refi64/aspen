@@ -1,0 +1,4 @@
+name: aspen_assets
+description: Access assets packed via Aspen in your Dart scripts
+dependencies:
+  js: ^0.6.1

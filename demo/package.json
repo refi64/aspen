@@ -1,0 +1,9 @@
+{
+  "name": "aspen_demo",
+  "dependencies": {
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
+    "material-design-lite": "^1.3.0",
+    "octicons": "^7.0.1"
+  }
+}
