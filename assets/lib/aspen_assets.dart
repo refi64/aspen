@@ -24,23 +24,23 @@ class AssetError implements Exception {
   String toString() => 'AssetError: $_cause';
 }
 
-dynamic _load(String path, String kind) {
-  _Asset asset = getProperty(_assets, path);
+dynamic _load(String name, String kind) {
+  _Asset asset = getProperty(_assets, name);
   if (asset == null) {
-    throw new AssetError('Unknown asset $path');
+    throw new AssetError('Unknown asset $name');
   }
 
   if (kind == 'global') {
     var globalLoad = asset.globalLoad;
     if (globalLoad == null) {
-      throw new AssetError('Asset $path cannot be globally loaded');
+      throw new AssetError('Asset $name cannot be globally loaded');
     }
     globalLoad(asset.value);
     return null;
   } else if (asset.kind == 'script') {
-    throw new AssetError('Asset $path is a script and cannot be loaded');
+    throw new AssetError('Asset $name is a script and cannot be loaded');
   } else if (asset.kind != kind) {
-    throw new AssetError('Asset $path has kind ${asset.kind}, not $kind');
+    throw new AssetError('Asset $name has kind ${asset.kind}, not $kind');
   } else {
     var result = asset.value;
     switch (kind) {
@@ -51,7 +51,11 @@ dynamic _load(String path, String kind) {
   }
 }
 
-String loadString(String path) => _load(path, 'string');
-List<int> loadBinary(String path) => _load(path, 'binary');
-dynamic loadObject(String path) => _load(path, 'object');
-void loadGlobal(String path) { _load(path, 'global'); }
+/// Loads the given string asset.
+String loadString(String name) => _load(name, 'string');
+/// Loads the given binary asset.
+List<int> loadBinary(String name) => _load(name, 'binary');
+/// Loads the given object asset.
+dynamic loadObject(String name) => _load(name, 'object');
+/// Globally loads the given asset.
+void loadGlobal(String name) { _load(name, 'global'); }

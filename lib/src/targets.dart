@@ -5,11 +5,13 @@ import 'loader_map.dart';
 import '../config.dart';
 import '../loader.dart';
 
-void assignTargetLoaders(Map<String, Target> targets, LoaderMap loaderMap) {
+/// For each target, verifies any given loaders and infers any others from the target's
+/// input extensions.
+void _assignTargetLoaders(Map<String, Target> targets, LoaderMap loaderMap) {
   for (var target in targets.values) {
     for (var asset in target.assets) {
       if (asset.loader != null) {
-        if (!loaderMap.containsKey(asset.loader)) {
+        if (!loaderMap.contains(asset.loader)) {
           error('Asset in target ${target.name} uses undefined loader ${asset.loader}');
         }
       } else {
@@ -46,7 +48,8 @@ void assignTargetLoaders(Map<String, Target> targets, LoaderMap loaderMap) {
   }
 }
 
-void setupDerivedTargets(Map<String, Target> targets) {
+/// For each derived target, adds the parent's outputs and assets to the child target.
+void _setupDerivedTargets(Map<String, Target> targets) {
   for (var target in targets.values) {
     if (target.from == null) continue;
     else if (!targets.containsKey(target.from)) {
@@ -65,6 +68,6 @@ void setupDerivedTargets(Map<String, Target> targets) {
 }
 
 void setupTargets(Map<String, Target> targets, LoaderMap loaderMap) {
-  assignTargetLoaders(targets, loaderMap);
-  setupDerivedTargets(targets);
+  _assignTargetLoaders(targets, loaderMap);
+  _setupDerivedTargets(targets);
 }

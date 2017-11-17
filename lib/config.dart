@@ -4,19 +4,27 @@ import 'dart:io';
 
 import 'src/console.dart';
 
+/// A build mode: dev for development/debug builds, and prod for production.
 enum BuildMode { dev, prod }
 
+/// Converts [str] (either 'dev' or 'prod') to a [BuildMode].
 BuildMode buildModeFromString(String str) {
   var modeString = 'BuildMode.$str';
   return BuildMode.values.firstWhere((m) => m.toString() == modeString);
 }
 
+/// An asset the user has declared in their config file.
 class Asset {
+  /// The asset name. May be null.
   String name;
+  /// A mapping of a [BuildMode] to the input file that should be used.
   Map<BuildMode, String> modesToInputs;
+  /// The loader this asset needs. This may be null until [setupTargets] fills in the
+  /// loader for the proper file extension.
   String loader;
   Asset({this.name, this.modesToInputs, this.loader});
 
+  /// Read in an asset from [m] from inside [target] (only used for error messages).
   factory Asset.parse(String target, dynamic m) {
     if (m is String) {
       return new Asset(modesToInputs: {BuildMode.dev: m, BuildMode.prod: m},
@@ -74,12 +82,19 @@ class Asset {
   }
 }
 
+/// A target the user has declared in the config file.
 class Target {
-  String name, from;
+  /// The name of the target.
+  String name;
+  /// The target this one is derived from (may be null).
+  String from;
+  /// A mapping of loader names to the output file that should be used.
   Map<String, String> loadersToOutputs;
+  /// A list of assets within this target.
   List<Asset> assets;
   Target({this.name, this.from, this.loadersToOutputs, this.assets});
 
+  /// Read in a target named [name] from the map [m].
   factory Target.parse(String name, Map m) {
     var loadersToOutputs = <String, String>{};
     var assets = <Asset>[];
@@ -95,7 +110,8 @@ class Target {
           for (var outLoader in value.keys) {
             check(outLoader is String, 'Target $name output key should be a string');
             var outValue = value[outLoader];
-            check(outValue is String, 'Target $name output $outLoader should be a string');
+            check(outValue is String, 'Target $name output $outLoader should be a '
+                                      'string');
 
             loadersToOutputs[outLoader] = outValue;
           }
@@ -119,11 +135,15 @@ class Target {
   }
 }
 
+/// The user's config file.
 class Config {
-  Map<String, String> loaderAliases = {};
-  Map<String, Target> targets = {};
+  /// A mapping of strong loader aliases to the loader they alias.
+  Map<String, String> loaderAliases;
+  /// A mapping of target names to their targets.
+  Map<String, Target> targets;
   Config({this.loaderAliases, this.targets});
 
+  /// Read in a config file from the map [m].
   factory Config.parse(Map m) {
     var loaderAliases = <String, String>{};
     var targets = <String, Target>{};
@@ -163,6 +183,7 @@ class Config {
   }
 }
 
+/// Parses and returns the YAML config file at [path].
 Config parseConfig(String path) {
   var file = new File(path);
   if (!file.existsSync()) {

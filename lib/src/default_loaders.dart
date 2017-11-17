@@ -1,17 +1,22 @@
 import '../loader.dart';
 
+/// Loads a generic binary file.
 class BasicBinaryLoader extends BinaryLoader {
   final name = 'binary';
 }
 
+/// Loads a generic text file.
 class BasicTextLoader extends StringLoader {
   final name = 'text';
 }
 
+/// Loads a file containing a valid JavaScript expression.
 class BasicObjectLoader extends ObjectLoader {
   final name = 'object';
 }
 
+/// Loads a CSS stylesheet. The stylesheet will be appended to the document head if
+/// loadGlobal is called.
 class CssLoader extends StringLoader {
   final name = 'css';
   final extensions = ['.css'];
@@ -21,11 +26,13 @@ class CssLoader extends StringLoader {
   ''';
 }
 
+/// Loads a JSON file.
 class JsonLoader extends ObjectLoader {
   final name = 'json';
   final extensions = ['.json'];
 }
 
+/// Loads a JavaScript script that will be immediately executed.
 class JsLoader extends ScriptLoader {
   final name = 'js';
   final extensions = ['.js'];
@@ -40,6 +47,7 @@ final _defaultLoaderList = <Loader>[
   new JsLoader(),
 ];
 
+/// Stores the default loaders and allows for access.
 class DefaultLoaders  {
   static Map<String, Loader> getMap() {
     var loaderMap = <String, Loader>{};

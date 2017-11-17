@@ -2,14 +2,17 @@ import '../loader.dart';
 import 'console.dart';
 import 'default_loaders.dart';
 
+/// A set of loaders.
 class LoaderMap {
   var _map = <String, Loader>{};
   var _extensions = DefaultLoaders.getExtensions();
 
+  /// Creates a [LoaderMap] containing the default loaders.
   LoaderMap.withDefaults() {
     _map.addAll(DefaultLoaders.getMap());
   }
 
+  /// Add the given set of aliases to the loader map.
   void addAliases(Map<String, String> aliases) {
     _map.addAll(DefaultLoaders.getMap());
 
@@ -22,8 +25,11 @@ class LoaderMap {
     }
   }
 
+  /// Retrieves the loader with the name [key], or null if not present.
   Loader operator[](String key) => _map[key];
+  /// Retrieves the loader with the extension [ext], or null if not present.
   Loader forExtension(String ext) =>
       _extensions.containsKey(ext) ? _map[_extensions[ext]] : null;
-  bool containsKey(String key) => _map.containsKey(key);
+  /// Does this contain a loader named [key]?
+  bool contains(String key) => _map.containsKey(key);
 }
