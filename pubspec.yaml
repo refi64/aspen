@@ -2,6 +2,7 @@ name: aspen
 version: 0.1.0
 description: A modern, easy-to-use asset packer
 author: Ryan Gonzalez <rymg19@gmail.com>
+homepage: https://github.com/kirbyfan64/aspen
 dependencies:
   ansicolor: ^0.0.9
   args: ^1.0.0
