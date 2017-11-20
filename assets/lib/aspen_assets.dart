@@ -35,7 +35,7 @@ dynamic _load(String name, String kind) {
     if (globalLoad == null) {
       throw new AssetError('Asset $name cannot be globally loaded');
     }
-    globalLoad(asset.value);
+    globalLoad(UTF8.decode(BASE64.decode(asset.value)));
     return null;
   } else if (asset.kind == 'script') {
     throw new AssetError('Asset $name is a script and cannot be loaded');
