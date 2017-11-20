@@ -52,7 +52,7 @@ targets:
 
     assets:
     - dev: node_modules/vue/dist/vue.js
-    - prod: node_modules/vue/dist/vue.min.js
+      prod: node_modules/vue/dist/vue.min.js
 ```
 
 Now, *vue.js* is used for development builds and *vue.min.js* for production builds.
@@ -190,7 +190,7 @@ targets:
 
     assets:
     - dev: node_modules/vue/dist/vue.js
-    - prod: node_modules/vue/dist/vue.min.js
+      prod: node_modules/vue/dist/vue.min.js
     - name: material-css
       dev: node_modules/material-design-lite/material.css
       prod: node_modules/material-design-lite/material.min.css
@@ -218,7 +218,7 @@ targets:
 
     assets:
     - dev: node_modules/vue/dist/vue.js
-    - prod: node_modules/vue/dist/vue.min.js
+      prod: node_modules/vue/dist/vue.min.js
     - name: material-css
       dev: node_modules/material-design-lite/material.css
       prod: node_modules/material-design-lite/material.min.css
