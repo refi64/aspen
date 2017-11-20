@@ -7,6 +7,7 @@ import 'package:aspen/src/generate.dart';
 import 'package:aspen/config.dart';
 
 import 'dart:async';
+import 'dart:io';
 
 Future main(List<String> args) async {
   var parser = new ArgParser();
@@ -14,7 +15,24 @@ Future main(List<String> args) async {
                    defaultsTo: 'aspen.yml');
   parser.addOption('mode', abbr: 'm', help: 'The build mode', defaultsTo: 'dev',
                    allowed: ['dev', 'prod']);
-  var results = parser.parse(args);
+  parser.addFlag('help', abbr: 'h', help: 'Show this screen');
+
+  ArgResults results;
+  try {
+    results = parser.parse(args);
+  } on ArgParserException catch (ex) {
+    error("Error parsing arguments: ${ex.message}");
+  }
+
+  if (results['help']) {
+    print('usage: aspen <targets to run> [-c <config>] [-m <mode>] [-h]');
+    print('Aspen is an asset packer for Dart.');
+
+    print('If no targets to run are passed, "default" will be used.');
+    print('\nArguments:\n');
+    print(parser.usage);
+    exit(0);
+  }
 
   var config = parseConfig(results['config']);
   var mode = buildModeFromString(results['mode']);
