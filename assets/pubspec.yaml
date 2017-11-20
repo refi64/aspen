@@ -1,5 +1,5 @@
 name: aspen_assets
-version: 0.1.0
+version: 0.1.1
 description: Access assets packed via Aspen in your Dart scripts
 author: Ryan Gonzalez <rymg19@gmail.com>
 homepage: https://github.com/kirbyfan64/aspen
