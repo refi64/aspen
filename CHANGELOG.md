@@ -1,6 +1,6 @@
-# 0.1.2
+# 0.1.3
 
-- Fix a decoding bug in the CSS loader.
+- Fix a CSS loader bug.
 
 # 0.1.1
 

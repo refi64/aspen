@@ -22,7 +22,11 @@ class CssLoader extends StringLoader {
   final extensions = ['.css'];
 
   final globalLoadJs = '''
-  function (data) { document.head.append(data); }
+  function (data) {
+    var st = document.createElement('style');
+    st.appendChild(document.createTextNode(data));
+    document.head.appendChild(st);
+  }
   ''';
 }
 
