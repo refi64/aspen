@@ -11,6 +11,8 @@ import 'dart:typed_data';
 @JS()
 class _Asset {
   external Function get globalLoad;
+  external bool get globalLoadCompleted;
+  external set globalLoadCompleted(bool value);
   external String get kind;
   external dynamic get value;
 }
@@ -31,11 +33,17 @@ dynamic _load(String name, String kind) {
   }
 
   if (kind == 'global') {
+    if (asset.globalLoadCompleted) {
+      throw new AssetError('Asset $name has already been globally loaded');
+    }
+
     var globalLoad = asset.globalLoad;
     if (globalLoad == null) {
       throw new AssetError('Asset $name cannot be globally loaded');
     }
     globalLoad(UTF8.decode(BASE64.decode(asset.value)));
+    asset.globalLoadCompleted = true;
+
     return null;
   } else if (asset.kind == 'script') {
     throw new AssetError('Asset $name is a script and cannot be loaded');

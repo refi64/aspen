@@ -55,15 +55,23 @@ Future<AssetResult> processAsset(Asset asset, BuildMode mode, LoaderMap loaderMa
     var variable = 'window.aspenAssets\$v1[$jsName]';
 
     if (asset.autoload) {
-      code = '($globalLoad)(window.atob($js));';
+      code = '''
+$variable = {
+  value: ($js),
+  globalLoadCompleted: true,
+  kind: '$kind',
+};
+($globalLoad)(window.atob($variable.value));
+''';
     } else {
       code = '''
 $variable = {
   value: ($js),
   globalLoad: ($globalLoad),
+  globalLoadCompleted: false,
   kind: '$kind'
 };
-    ''';
+      ''';
     }
   }
 
