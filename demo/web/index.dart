@@ -2,7 +2,8 @@ import 'package:aspen_assets/aspen_assets.dart' as aspen;
 import 'dart:html';
 
 void main() {
-  aspen.loadGlobal('mdl');
+  // aspen.loadGlobal('mdl');
+  aspen.loadGlobal('md-icons');
   var svg = aspen.loadString('svg');
   var validator = new NodeValidatorBuilder()..allowSvg();
   document.querySelector('#svg').appendHtml(svg, validator: validator);

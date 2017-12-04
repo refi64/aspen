@@ -16,6 +16,8 @@ targets:
     - name: mdl
       dev: node_modules/material-design-lite/material.css
       prod: node_modules/material-design-lite/material.min.css
+    - name: md-icons
+      default: node_modules/material-design-icons/iconfont/material-icons.css
     - name: svg
       default: node_modules/octicons/build/svg/eye.svg
       loader: svg

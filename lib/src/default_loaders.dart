@@ -1,5 +1,7 @@
 import '../loader.dart';
 
+import 'default_loaders/css_loader.dart';
+
 /// Loads a generic binary file.
 class BasicBinaryLoader extends BinaryLoader {
   final name = 'binary';
@@ -13,21 +15,6 @@ class BasicTextLoader extends StringLoader {
 /// Loads a file containing a valid JavaScript expression.
 class BasicObjectLoader extends ObjectLoader {
   final name = 'object';
-}
-
-/// Loads a CSS stylesheet. The stylesheet will be appended to the document head if
-/// loadGlobal is called.
-class CssLoader extends StringLoader {
-  final name = 'css';
-  final extensions = ['.css'];
-
-  final globalLoadJs = '''
-  function (data) {
-    var st = document.createElement('style');
-    st.appendChild(document.createTextNode(data));
-    document.head.appendChild(st);
-  }
-  ''';
 }
 
 /// Loads a JSON file.

@@ -7,8 +7,10 @@ import 'dart:typed_data';
 
 /// An input asset.
 class AssetPath {
-  String path;
+  final String path;
   AssetPath(this.path);
+
+  String toString() => path;
 }
 
 /// The context passed to loader processing methods. Used for accessing the file system
