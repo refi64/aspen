@@ -177,6 +177,43 @@ void main() {
 }
 ```
 
+Some loaders can take options. Well, right now it's only the CSS loader. It can take
+an *inline* option specifying whether or not to inline assets. For instance, given
+`inline-demo.css`:
+
+```css
+* {
+  something: url('something');
+  something-else: url('something-else');
+}
+```
+
+You can use *inline* to specify some assets to inline:
+
+```yaml
+targets:
+  default:
+    outputs:
+      default: web/vendor.js
+
+    assets:
+    - name: inline-demo-1
+      default: inline-demo.css
+      options:
+        # inline: true means that everything will be inlined.
+        inline: true
+
+    - name: inline-demo-2
+      default: inline-demo.css
+      options:
+        # You can also pass a list of paths to be inlined.
+        inline: [something-else]
+
+    - name: inline-demo-3
+      default: inline-demo.css
+      # If not specified, the default value of inline is false, meaning nothing will ever be inlined.
+```
+
 ### Multiple output files
 
 You can split assets into multiple different files based on their loader:
