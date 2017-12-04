@@ -3,7 +3,6 @@ import 'package:path/path.dart' as p;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 /// An input asset.
 class AssetPath {

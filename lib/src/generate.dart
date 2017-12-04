@@ -2,6 +2,7 @@ import 'package:path/path.dart' as p;
 
 import '../config.dart';
 import '../loader.dart';
+import 'console.dart';
 import 'loader_map.dart';
 
 import 'dart:async';
@@ -14,18 +15,35 @@ String jsString(String str) {
   return "'$escaped'";
 }
 
+class GlobalProgressData {
+  int completed = 0, total;
+  GlobalProgressData({this.total});
+}
+
+GlobalProgressData globalProgressData;
+
 class AssetResult {
   String code;
   String loader;
   AssetResult({this.code, this.loader});
 }
 
-Future<AssetResult> processAsset(Asset asset, BuildMode mode,
-                                 LoaderMap loaderMap, LoaderContext context) async {
+Future<AssetResult> processAsset(Asset asset, BuildMode mode, LoaderMap loaderMap,
+                                 LoaderContext context) async {
   var loader = loaderMap[asset.loader];
   var assetPath = new AssetPath(asset.modesToInputs[mode]);
 
-  var js = await loader.toJs(context, assetPath);
+  showProgress(current: globalProgressData.completed, total: globalProgressData.total,
+               message: 'begin processing $assetPath');
+
+  String js;
+  try {
+    js = await loader.toJs(context, assetPath);
+  } catch (ex) {
+    print('');
+    rethrow;
+  }
+
   var kind = loader.kind;
   String code;
 
@@ -43,12 +61,17 @@ window.aspenAssets\$v1[${jsString(asset.name)}] = {
     ''';
   }
 
+  globalProgressData.completed += 1;
+  showProgress(current: globalProgressData.completed, total: globalProgressData.total,
+               message: 'done processing $assetPath');
   return new AssetResult(code: code, loader: asset.loader);
 }
 
 Future<Map<String, String>> processTarget(Target target, BuildMode mode,
                                           LoaderMap loaderMap) async {
   var context = new LoaderContext(Directory.current.path);
+
+  globalProgressData = new GlobalProgressData(total: target.assets.length);
   var results = await Future.wait(target.assets.map((asset) =>
                                     processAsset(asset, mode, loaderMap, context)),
                                   eagerError: true);
@@ -66,8 +89,18 @@ Future<Map<String, String>> processTarget(Target target, BuildMode mode,
 Future writeResult(String loader, String code,
                    Map<String, String> loadersToOutputs) async {
   var output = loadersToOutputs[loader];
+
+  showProgress(current: globalProgressData.completed, total: globalProgressData.total,
+               message: 'begin writing $loader: $output');
+
   await new Directory(p.dirname(output)).create(recursive: true);
-  new File(output).writeAsString(code);
+  await new File(output).writeAsString(code);
+
+  globalProgressData.completed += 1;
+  showProgress(current: globalProgressData.completed, total: globalProgressData.total,
+               message: 'done writing $loader: $output');
+
+  return new Future.value();
 }
 
 Future writeResults(Map<String, String> loadersToOutputs,
@@ -85,13 +118,30 @@ Future writeResults(Map<String, String> loadersToOutputs,
     results['default'] = defaultCode;
   }
 
-  await Future.wait(results.keys.map((loader) =>
-                                      writeResult(loader, results[loader],
-                                                  loadersToOutputs)));
+  var loaders = new List.from(results.keys);
+  globalProgressData = new GlobalProgressData(total: loaders.length);
+
+  await Future.wait(loaders.map((loader) =>
+                                  writeResult(loader, results[loader],
+                                              loadersToOutputs)));
   return new Future.value();
 }
 
 Future generateTarget(Target target, BuildMode mode, LoaderMap loaderMap) async {
+  note('Generating target ${target.name}...');
+
+  var watch = new Stopwatch();
+  watch.start();
+
   var results = await processTarget(target, mode, loaderMap);
+  print('');
+
   await writeResults(target.loadersToOutputs, results);
+  print('');
+
+  watch.stop();
+
+  var elapsed = watch.elapsed;
+  var seconds = elapsed.inSeconds + (elapsed.inMilliseconds / 1000);
+  success('Processed ${target.assets.length} assets in ${seconds.toStringAsFixed(3)}s.');
 }
