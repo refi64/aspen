@@ -45,7 +45,7 @@ abstract class Loader {
   List<String> get extensions => null;
   /// Converts the given asset to a JavaScript expression or statement. Custom loaders
   /// should not override this!
-  Future<String> toJs(LoaderContext context, AssetPath asset);
+  Future<String> toJs(LoaderContext context, AssetPath asset, Map options);
 }
 
 abstract class _BaseEncoder {
@@ -53,10 +53,10 @@ abstract class _BaseEncoder {
   ///
   /// Custom loaders that subclass [ObjectLoader] and [ScriptLoader] may override
   /// this method to apply custom transformations to the asset.
-  Future<String> process(LoaderContext context, AssetPath asset) =>
+  Future<String> process(LoaderContext context, AssetPath asset, Map options) =>
     context.readAsString(asset);
-  Future<String> toJs(LoaderContext context, AssetPath asset) async =>
-    process(context, asset);
+  Future<String> toJs(LoaderContext context, AssetPath asset, Map options) async =>
+    process(context, asset, options);
 }
 
 abstract class _BinaryEncoder {
@@ -64,10 +64,10 @@ abstract class _BinaryEncoder {
   ///
   /// Custom loaders that subclass [ObjectLoader] and [ScriptLoader] may override
   /// this method to apply custom transformations to the asset.
-  Future<List<int>> process(LoaderContext context, AssetPath asset) =>
+  Future<List<int>> process(LoaderContext context, AssetPath asset, Map options) =>
     context.readAsBytes(asset);
-  Future<String> toJs(LoaderContext context, AssetPath asset) async =>
-    new Future.value("'${BASE64.encode(await process(context, asset))}'");
+  Future<String> toJs(LoaderContext context, AssetPath asset, Map options) async =>
+    new Future.value("'${BASE64.encode(await process(context, asset, options))}'");
 }
 
 abstract class _StringEncoder {
@@ -75,10 +75,11 @@ abstract class _StringEncoder {
   ///
   /// Custom loaders that subclass [ObjectLoader] and [ScriptLoader] may override
   /// this method to apply custom transformations to the asset.
-  Future<String> process(LoaderContext context, AssetPath asset) =>
+  Future<String> process(LoaderContext context, AssetPath asset, Map options) =>
     context.readAsString(asset);
-  Future<String> toJs(LoaderContext context, AssetPath asset) async =>
-    new Future.value("'${BASE64.encode(UTF8.encode(await process(context, asset)))}'");
+  Future<String> toJs(LoaderContext context, AssetPath asset, Map options) async =>
+    new Future.value("'${BASE64.encode(UTF8.encode(await process(context, asset,
+                                                                 options)))}'");
 }
 
 /// A loader that supports aspen.loadGlobal. Custom loaders should derive from either

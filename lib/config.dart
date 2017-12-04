@@ -22,7 +22,9 @@ class Asset {
   /// The loader this asset needs. This may be null until [setupTargets] fills in the
   /// loader for the proper file extension.
   String loader;
-  Asset({this.name, this.modesToInputs, this.loader});
+  /// A mapping of options to pass to the asset's loader.
+  Map options;
+  Asset({this.name, this.modesToInputs, this.loader, this.options});
 
   /// Read in an asset from [m] from inside [target] (only used for error messages).
   factory Asset.parse(String target, dynamic m) {
@@ -35,10 +37,18 @@ class Asset {
 
     String name, loader;
     var modesToInputs = <BuildMode, String>{};
+    var options = {};
 
     for (var key in m.keys) {
       check(key is String, 'Target $target asset keys should be strings');
       var value = m[key];
+
+      if (key == 'options') {
+        check(value is Map, 'Target $target asset options should be a map');
+        options = value;
+        continue;
+      }
+
       check(value is String, 'Target $target asset $key value should be a string');
 
       switch (key) {
@@ -78,7 +88,8 @@ class Asset {
       }
     }
 
-    return new Asset(name: name, modesToInputs: modesToInputs, loader: loader);
+    return new Asset(name: name, modesToInputs: modesToInputs, loader: loader,
+                     options: options);
   }
 }
 

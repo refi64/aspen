@@ -9,20 +9,28 @@ import 'dart:async';
 import 'dart:convert';
 
 
-// Embeds the contents of URLs into the stylesheets.
+/// Embeds the contents of URLs into the stylesheets.
 class _UrlEmbedVisitor extends Visitor {
   LoaderContext context;
   AssetPath asset;
+  /// An optional list of URLs whose contents should be inlined into the CSS file. If
+  /// null, everything will be inlined.
+  List<String> inline;
 
   var futures = <Future>[];
 
-  _UrlEmbedVisitor(this.context, this.asset);
+  _UrlEmbedVisitor(this.context, this.asset, this.inline);
 
   void visitUriTerm(UriTerm node) {
     futures.add(visitUriTermAsync(node));
   }
 
   Future visitUriTermAsync(UriTerm node) async {
+    if (inline != null && !inline.contains(node.value)) {
+      // Skip inlining.
+      return new Future.value();
+    }
+
     Uri uri;
 
     try {
@@ -63,11 +71,35 @@ class CssLoader extends StringLoader {
   final name = 'css';
   final extensions = ['.css'];
 
-  Future<String> process(LoaderContext context, AssetPath asset) async {
+  Future<String> process(LoaderContext context, AssetPath asset, Map options) async {
+    var inlineOption = options['inline'] ?? false;
+    List<String> inline;
+
+    if (inlineOption is List) {
+      for (var item in inlineOption) {
+        if (item is! String) {
+          print(''); // close off progress.
+          error('CSS loader inline option should be a bool or list of strings.');
+        }
+      }
+
+      inline = inlineOption;
+    } else if (inlineOption is bool) {
+      if (inlineOption) {
+        // Signal the _UrlEmbedVisitor to inline everything.
+        inline = null;
+      } else {
+        return context.readAsString(asset);
+      }
+    } else {
+      print(''); // close off progress.
+      error('CSS loader inline option should be a bool or list of strings.');
+    }
+
     var styleString = await context.readAsString(asset);
     var style = css.parse(styleString);
 
-    var visitor = new _UrlEmbedVisitor(context, asset);
+    var visitor = new _UrlEmbedVisitor(context, asset, inline);
     await visitor.visitAndWait(style);
 
     var printer = new CssPrinter();

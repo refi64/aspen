@@ -38,7 +38,7 @@ Future<AssetResult> processAsset(Asset asset, BuildMode mode, LoaderMap loaderMa
 
   String js;
   try {
-    js = await loader.toJs(context, assetPath);
+    js = await loader.toJs(context, assetPath, asset.options);
   } catch (ex) {
     print('');
     rethrow;
