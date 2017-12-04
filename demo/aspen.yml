@@ -20,6 +20,7 @@ targets:
       default: node_modules/material-design-icons/iconfont/material-icons.css
       options:
         inline: true
+      autoload: true
     - name: svg
       default: node_modules/octicons/build/svg/eye.svg
       loader: svg

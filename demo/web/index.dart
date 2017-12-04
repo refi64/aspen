@@ -3,7 +3,7 @@ import 'dart:html';
 
 void main() {
   // aspen.loadGlobal('mdl');
-  aspen.loadGlobal('md-icons');
+  // aspen.loadGlobal('md-icons');
   var svg = aspen.loadString('svg');
   var validator = new NodeValidatorBuilder()..allowSvg();
   document.querySelector('#svg').appendHtml(svg, validator: validator);

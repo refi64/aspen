@@ -36,12 +36,21 @@ void _assignTargetLoaders(Map<String, Target> targets, LoaderMap loaderMap) {
             error('Asset in target ${target.name} uses at least two different loaders: '
                   '${asset.loader} and ${thisModeLoader.name}');
           } else if (thisModeLoader is ScriptLoader && asset.name != null) {
-            error('Asset ${asset.name} in target ${target.name} has a loader that ' +
+            error('Asset ${asset.name} in target ${target.name} has a loader that '
                   'cannot be loaded by name, but it declares a name anyway');
           } else if (thisModeLoader is! ScriptLoader && asset.name == null) {
-            error('Asset in target ${target.name} has a loader that can only be ' +
-                  'used by name, but the asset has no name');
+            error('Asset in target ${target.name} has a loader that can only be used '
+                  'by name, but the asset has no name');
           }
+        }
+      }
+
+      if (asset.autoload) {
+        var thisModeLoader = loaderMap[asset.loader];
+        if (thisModeLoader is! GlobalLoader ||
+            (thisModeLoader as GlobalLoader).globalLoadJs == null) {
+          error('Asset in target ${target.name} specifies autoload, but the loader '
+                '${asset.loader} does not support global loading.');
         }
       }
     }

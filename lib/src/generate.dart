@@ -51,14 +51,20 @@ Future<AssetResult> processAsset(Asset asset, BuildMode mode, LoaderMap loaderMa
     code = js;
   } else {
     String globalLoad = loader is GlobalLoader ? loader.globalLoadJs : 'null';
+    var jsName = jsString(asset.name);
+    var variable = 'window.aspenAssets\$v1[$jsName]';
 
-    code = '''
-window.aspenAssets\$v1[${jsString(asset.name)}] = {
+    if (asset.autoload) {
+      code = '($globalLoad)(window.atob($js));';
+    } else {
+      code = '''
+$variable = {
   value: ($js),
   globalLoad: ($globalLoad),
   kind: '$kind'
 };
     ''';
+    }
   }
 
   globalProgressData.completed += 1;

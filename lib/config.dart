@@ -24,20 +24,24 @@ class Asset {
   String loader;
   /// A mapping of options to pass to the asset's loader.
   Map options;
-  Asset({this.name, this.modesToInputs, this.loader, this.options});
+  /// Whether or not this asset should be immediately globally loaded.
+  bool autoload;
+
+  Asset({this.name, this.modesToInputs, this.loader, this.options, this.autoload});
 
   /// Read in an asset from [m] from inside [target] (only used for error messages).
   factory Asset.parse(String target, dynamic m) {
     if (m is String) {
       return new Asset(modesToInputs: {BuildMode.dev: m, BuildMode.prod: m},
-                       loader: null);
+                       loader: null, options: {}, autoload: false);
     } else if (m is! Map) {
       error('Target $target asset value should be a string or map');
     }
 
     String name, loader;
     var modesToInputs = <BuildMode, String>{};
-    var options = {};
+    var options = null;
+    var autoload = null;
 
     for (var key in m.keys) {
       check(key is String, 'Target $target asset keys should be strings');
@@ -45,11 +49,11 @@ class Asset {
 
       if (key == 'options') {
         check(value is Map, 'Target $target asset options should be a map');
-        options = value;
-        continue;
+      } else if (key == 'autoload') {
+        check(value is bool, 'Target $target asset autoload value should be a bool');
+      } else {
+        check(value is String, 'Target $target asset $key value should be a string');
       }
-
-      check(value is String, 'Target $target asset $key value should be a string');
 
       switch (key) {
       case 'name':
@@ -82,6 +86,18 @@ class Asset {
         }
         loader = value;
         break;
+      case 'options':
+        if (options != null) {
+          error('Target $target asset default multiple options keys');
+        }
+        options = value;
+        break;
+      case 'autoload':
+        if (autoload != null) {
+          error('Target $target asset default multiple autoload values');
+        }
+        autoload = value;
+        break;
       default:
         error('Target $target asset contains unknown key $key');
         break;
@@ -89,7 +105,7 @@ class Asset {
     }
 
     return new Asset(name: name, modesToInputs: modesToInputs, loader: loader,
-                     options: options);
+                     options: options ?? {}, autoload: autoload ?? false);
   }
 }
 
