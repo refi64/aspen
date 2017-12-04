@@ -1,3 +1,9 @@
+# development
+
+- Support inlining CSS URL dependencies.
+- Support passing options to loaders.
+- Support automatically loading assets.
+
 # 0.1.3
 
 - Fix a CSS loader bug.
