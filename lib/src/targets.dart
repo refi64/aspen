@@ -38,7 +38,8 @@ void _assignTargetLoaders(Map<String, Target> targets, LoaderMap loaderMap) {
           } else if (thisModeLoader is ScriptLoader && asset.name != null) {
             error('Asset ${asset.name} in target ${target.name} has a loader that '
                   'cannot be loaded by name, but it declares a name anyway');
-          } else if (thisModeLoader is! ScriptLoader && asset.name == null) {
+          } else if (thisModeLoader is! ScriptLoader && asset.name == null &&
+                     !(thisModeLoader is GlobalLoader && asset.autoload)) {
             error('Asset in target ${target.name} has a loader that can only be used '
                   'by name, but the asset has no name');
           }
