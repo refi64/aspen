@@ -115,6 +115,21 @@ void main() {
 }
 ```
 
+If you want your CSS to be applied automatically, use `autoload`:
+
+```yaml
+targets:
+  default:
+    outputs:
+      default: web/vendor.js
+
+    assets:
+    - dev: node_modules/material-design-lite/material.css
+      prod: node_modules/material-design-lite/material.min.css
+      autoload: true
+      # Notice we don't need a name now, but you can still pass one
+```
+
 ### Loaders
 
 The core idea behind Aspen is a *loader*, which defines how input assets are processed.
