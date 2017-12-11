@@ -1,8 +1,11 @@
 # development
 
+# 0.2.0
+
 - Support inlining CSS URL dependencies.
 - Support passing options to loaders.
 - Support automatically loading assets.
+- Many, many CLI improvements, including some nice progress.
 
 # 0.1.3
 

@@ -1,4 +1,6 @@
-# master
+# development
+
+# 0.2.0
 
 - Ensure assets are never globally loaded twice.
 
