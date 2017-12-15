@@ -1,4 +1,4 @@
-# development
+# 0.2.1
 
 - Fix a bug regarding codegen for named assets.
 
