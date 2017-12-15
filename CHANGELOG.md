@@ -1,5 +1,7 @@
 # development
 
+- Fix a bug regarding codegen for named assets.
+
 # 0.2.0
 
 - Support inlining CSS URL dependencies.

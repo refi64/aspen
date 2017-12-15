@@ -51,7 +51,7 @@ Future<AssetResult> processAsset(Asset asset, BuildMode mode, LoaderMap loaderMa
     code = js;
   } else {
     String globalLoad = loader is GlobalLoader ? loader.globalLoadJs : 'null';
-    var jsName = asset.name ? jsString(asset.name) : null;
+    var jsName = asset.name != null ? jsString(asset.name) : null;
     var variable = 'window.aspenAssets\$v1[$jsName]';
 
     if (asset.autoload) {
