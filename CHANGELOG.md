@@ -1,3 +1,7 @@
+# 0.2.2
+
+- Stupid README fix.
+
 # 0.2.1
 
 - Fix a bug regarding codegen for named assets.

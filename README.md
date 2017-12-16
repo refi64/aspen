@@ -15,7 +15,7 @@ your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  aspen_assets: ^0.1.0
+  aspen_assets: ^0.2.0
 ```
 
 ## Usage
