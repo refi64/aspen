@@ -4,6 +4,7 @@ pubspec.lock
 yarn.lock
 yarn-error.log
 
+.dart_tool/
 .pub/
 node_modules/
 demo/web/vendor*
