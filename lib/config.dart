@@ -145,7 +145,7 @@ class Target {
           break;
         case 'assets':
           check(value is List, 'Target $name assets should be a list');
-          assets.addAll(value.map((a) => new Asset.parse(name, a)));
+          assets.addAll(value.map<Asset>((a) => new Asset.parse(name, a)));
           break;
         case 'from':
           check(value is String, 'Target $name from value should be a string');

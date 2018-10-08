@@ -67,7 +67,7 @@ abstract class _BinaryEncoder {
   Future<List<int>> process(LoaderContext context, AssetPath asset, Map options) =>
     context.readAsBytes(asset);
   Future<String> toJs(LoaderContext context, AssetPath asset, Map options) async =>
-    new Future.value("'${BASE64.encode(await process(context, asset, options))}'");
+    new Future.value("'${base64.encode(await process(context, asset, options))}'");
 }
 
 abstract class _StringEncoder {
@@ -78,7 +78,7 @@ abstract class _StringEncoder {
   Future<String> process(LoaderContext context, AssetPath asset, Map options) =>
     context.readAsString(asset);
   Future<String> toJs(LoaderContext context, AssetPath asset, Map options) async =>
-    new Future.value("'${BASE64.encode(UTF8.encode(await process(context, asset,
+    new Future.value("'${base64.encode(utf8.encode(await process(context, asset,
                                                                  options)))}'");
 }
 

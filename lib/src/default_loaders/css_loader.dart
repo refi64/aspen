@@ -53,8 +53,8 @@ class _UrlEmbedVisitor extends Visitor {
     }
 
     var contents = await context.readAsBytes(target);
-    var base64 = BASE64.encode(contents);
-    node.text = 'data:;base64,$base64';
+    var b64 = base64.encode(contents);
+    node.text = 'data:;base64,$b64';
   }
 
   Future visitAndWait(StyleSheet style) {

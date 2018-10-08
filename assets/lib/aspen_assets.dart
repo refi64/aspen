@@ -41,7 +41,7 @@ dynamic _load(String name, String kind) {
     if (globalLoad == null) {
       throw new AssetError('Asset $name cannot be globally loaded');
     }
-    globalLoad(UTF8.decode(BASE64.decode(asset.value)));
+    globalLoad(utf8.decode(base64.decode(asset.value)));
     asset.globalLoadCompleted = true;
 
     return null;
@@ -53,8 +53,8 @@ dynamic _load(String name, String kind) {
     var result = asset.value;
     switch (kind) {
     case 'object': return result;
-    case 'string': return UTF8.decode(BASE64.decode(result));
-    case 'binary': return BASE64.decode(result);
+    case 'string': return utf8.decode(base64.decode(result));
+    case 'binary': return base64.decode(result);
     }
   }
 }
