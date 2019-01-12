@@ -1,10 +1,10 @@
 .packages
-a.out
+package-lock.json
 pubspec.lock
 yarn.lock
 yarn-error.log
 
+build/
 .dart_tool/
 .pub/
 node_modules/
-demo/web/vendor*

@@ -1,0 +1,4 @@
+targets:
+  aspen_playground:
+    sources:
+      include: ['web/**', 'lib/**', 'node_modules/**']

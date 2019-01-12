@@ -1,0 +1,17 @@
+name: aspen_generator
+version: 0.3.0
+description: A modern, easy-to-use asset packer
+author: Ryan Gonzalez <rymg19@gmail.com>
+homepage: https://github.com/kirbyfan64/aspen
+dependencies:
+  analyzer: ^0.34.1
+  aspen: ^0.3.0
+  build: ^1.0.2
+  csslib: ^0.14.6
+  source_gen: ^0.9.3
+  z85: ^0.1.0
+dependency_overrides:
+  aspen:
+    path: ../aspen
+environment:
+  sdk: ">=2.0.0 <3.0.0"

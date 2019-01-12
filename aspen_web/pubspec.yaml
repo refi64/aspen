@@ -1,0 +1,16 @@
+name: aspen_web
+version: 0.3.0
+description: A modern, easy-to-use asset packer
+author: Ryan Gonzalez <rymg19@gmail.com>
+homepage: https://github.com/kirbyfan64/aspen
+dependencies:
+  aspen: ^0.3.0
+  aspen_assets: ^0.3.0
+  js: ^0.6.1
+dependency_overrides:
+  aspen:
+    path: ../aspen
+  aspen_assets:
+    path: ../aspen_assets
+environment:
+  sdk: ">=2.0.0 <3.0.0"

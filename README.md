@@ -4,6 +4,8 @@ Aspen is a modern, easy-to-use asset packer for Dart, partly inspired by Poi and
 Webpack. It can combine together your JavaScript, CSS, and text/binary assets into one
 .js file, or multiple different files if you prefer.
 
+**NOTE:** All of this is outdated and isn't even remotely still accurate.
+
 ## Installation
 
 ```
