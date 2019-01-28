@@ -1,4 +1,14 @@
 targets:
   aspen_playground:
     sources:
-      include: ['web/**', 'lib/**', 'node_modules/**']
+      include:
+        - 'benchmark/**'
+        - 'bin/**'
+        - 'example/**'
+        - 'lib/**'
+        - 'node_modules/**'
+        - 'test/**'
+        - 'tool/**'
+        - 'web/**'
+        - 'pubspec.yaml'
+        - 'pubspec.lock'

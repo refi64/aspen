@@ -1,289 +1,185 @@
 # aspen
 
-Aspen is a modern, easy-to-use asset packer for Dart, partly inspired by Poi and
-Webpack. It can combine together your JavaScript, CSS, and text/binary assets into one
-.js file, or multiple different files if you prefer.
+Aspen is a modern, easy-to-use asset packer for Dart, compatible with both server and client.
 
-**NOTE:** All of this is outdated and isn't even remotely still accurate.
+**NOTE:** Aspen 0.3 is an *enormous* breaking change from 0.2, but it's largely a net positive,
+as it now integrates more closely with `package:build` and supports incremental builds.
 
 ## Installation
 
-```
-$ pub global activate aspen
-```
-
-If you need to use the `aspen_assets` package (see below for more info), add this to
-your `pubspec.yaml`:
+At minimum, you'll need the `aspen` and `aspen_assets` packages, as well as a dev dependency on
+`aspen_generator`:
 
 ```yaml
 dependencies:
-  aspen_assets: ^0.2.0
+  aspen: ^0.3.0
+  aspen_assets: ^0.3.0
+dev_dependencies:
+  aspen_generator: ^0.3.0
+```
+
+If you want to embed web-related assets (e.g. JavaScript and CSS), you can add `aspen_web`, but
+this will make your project web-only:
+
+```yaml
+dependencies:
+  aspen: ^0.3.0
+  aspen_assets: ^0.3.0
+  aspen_web: ^0.3.0
+dev_dependencies:
+  aspen_generator: ^0.3.0
+```
+
+In addition, by default `package:build` only allows you to use assets from a [pre-defined
+whitelist of directories](https://github.com/dart-lang/build/blob/build-v1.1.0/build_runner_core/lib/src/generate/options.dart#L19-L31).
+If you want others, you'll have to add them manually by placing this in `build.yaml`:
+
+```yaml
+targets:
+  aspen_playground:
+    sources:
+      include:
+        # Here's the default whitelist
+        - 'benchmark/**'
+        - 'bin/**'
+        - 'example/**'
+        - 'lib/**'
+        - 'test/**'
+        - 'tool/**'
+        - 'web/**'
+        - 'pubspec.yaml'
+        - 'pubspec.lock'
+
+        # And some custom paths we added
+        - 'node_modules/**'
 ```
 
 ## Usage
 
-### Declaring JavaScript assets
+### Workings
 
-The simplest way to use Aspen is kind of like this:
+The basic idea of how Aspen works is that you create a `.dart` file, containing `@Asset`
+annotations. Aspen will process this file and create a `.g.dart` file containing the
+included assets.
 
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
+### A simple example
 
-    assets:
-    - node_modules/vue/dist/vue.js
-```
-
-This is defining the default target (fittingly named *default*) that consists of just
-one asset.
-
-Now just save this to `aspen.yml` run `aspen`. Aspen will combine the input assets and
-output *web/vendor.js*. When you load *web/vendor.js* in your web browser, it will
-automatically run *vue.js*.
-
-However, in many cases you want to use a different file for development and
-production builds. Aspen lets you do this via the *dev* and *prod* keys:
-
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-
-    assets:
-    - dev: node_modules/vue/dist/vue.js
-      prod: node_modules/vue/dist/vue.min.js
-```
-
-Now, *vue.js* is used for development builds and *vue.min.js* for production builds.
-(You can perform a production build using `aspen -m prod`.)
-
-Going back to the first example, this:
-
-```yaml
-assets:
-- node_modules/vue/dist/vue.js
-```
-
-is just shorthand for this:
-
-```yaml
-assets:
-- default: node_modules/vue/dist/vue.js
-```
-
-The *default* parameter just sets the same file to be used for both development and
-production builds.
-
-### Declaring CSS assets
-
-CSS files work in a similar way:
-
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-
-    assets:
-    - name: material-css  # <-- Note this for later!
-      dev: node_modules/material-design-lite/material.css
-      prod: node_modules/material-design-lite/material.min.css
-```
-
-However, unlike JavaScript assets, CSS assets won't be automatically applied. In order
-to do so, you need to use the `aspen_assets` package. Here's an example:
+Assume this all goes in `lib/assets.dart` in `my_package`:
 
 ```dart
-import 'package:aspen_assets/aspen_assets.dart' as aspen;
+import 'package:aspen/aspen.dart';
+import 'package:aspen_assets/aspen_assets.dart';
 
-void main() {
-  aspen.loadGlobal('material-css');
-}
+// Here, we import the to-be-generated assets file, which contains the actual asset content.
+import 'assets.g.dart' as assets_g;
+
+// @Asset is an annotation from package:aspen that marks the asset to be packed.
+@Asset('asset:my_package/web/my-asset.txt')
+// We create a const (it must be const!) value that holds the generated asset content.
+const myTextAsset = TextAsset(text: assets_g.myTextAsset$content);
+// aspen_generator will use the value (here, it's TextAsset(...)) to determine what type of
+// asset to use.
+
+// We can also provide a different path to be used in release mode:
+@Aspen('asset:my_package/web/my-asset.bin', release: 'asset:my_package/web/my-assets.rel.bin')
+// Here, instead, a BinaryAsset is used.
+const myBinAsset = BinaryAsset(encoded: assets_g.myBinAsset$content);
+
+// You can also have JSON assets (JsonAsset is a subclass of TextAsset).
+@Aspen('asset:my_package/web/my-asset.json')
+const myJsonAsset = JsonAsset(text: assets_g.myJsonAsset$content);
 ```
 
-Note that `aspen.loadGlobal` takes the name we specified above with `name: material-css`.
-
-You can also access the CSS stylesheet by itself via `aspen.loadString`:
+Then, it can be accessed from our main file:
 
 ```dart
-import 'package:aspen_assets/aspen_assets.dart' as aspen;
+import 'package:my_package/assets.dart' as assets;
 
 void main() {
-  String css = aspen.loadString('material-css');
-  print(css);
+  // The content of a text asset can be retrieved via the text property.
+  String myTextAssetText = assets.myTextAsset.text;
+
+  // The content of a binary asset can be decoded via the decode() method,
+  // and the z85-encoded data can be retrieved via the encoded property.
+  List<int> myBinaryAssetBytes = List<int>.from(assets.myBinAsset.decode());
+  String myBinaryAssetUndecodedBytes = assets.myBinAsset.encoded;
+
+  // A JSON asset can be parsed via the json() method.
+  dynamic myJsonAssetParseJson = assets.myJsonAsset.json();
 }
 ```
 
-If you want your CSS to be applied automatically, use `autoload`:
+### Web assets
 
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-
-    assets:
-    - dev: node_modules/material-design-lite/material.css
-      prod: node_modules/material-design-lite/material.min.css
-      autoload: true
-      # Notice we don't need a name now, but you can still pass one
-```
-
-### Loaders
-
-The core idea behind Aspen is a *loader*, which defines how input assets are processed.
-These are the built-in loaders (custom loaders will come in a future version):
-
-- *binary*
-- *text*
-- *css*
-- *json*
-- *js*
-
-The *js* loader is automatically picked for *.js* files, and the *css* loader is
-automatically picked for *.css* files. The others must be manually specified. You can
-do so like this:
-
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-
-    assets:
-    - name: eye-octicon
-      default: node_modules/octicons/eye.svg
-      loader: text
-```
-
-The important thing to note is the `loader: text` section. This says that the input
-asset will be using the *text* loader. Now it can be accessed like so:
+`package:aspen_web` provides some more assets handy for client-side web development. Say we put
+this in `assets.dart`:
 
 ```dart
-import 'package:aspen_assets/aspen_assets.dart' as aspen;
+import 'package:aspen/aspen.dart';
+import 'package:aspen_web/aspen_web.dart';
 
-void main() {
-  String svg = aspen.loadString('eye-octicon');
-  print(svg);
-  // Do something with the svg contents.
-}
+import 'assets.g.dart' as assets_g;
+
+// A JsAsset (subclass of TextAsset) holds JavaScript code;
+@Asset('asset:my_package/node_modules/vue/dist/vue.js',
+       release: 'asset:my_package/node_modules/vue/dist/vue.min.js')
+const myJsAsset = JsAsset(text: assets_g.myJsAsset$content);
+
+// A CssAsset (again, subclass of TextAsset holds a CSS style sheet).
+@Asset('asset:my_package/web/my-asset.css')
+const myCssAsset = CssAsset(
+  text: assets_g.myCssAsset$content,
+  // Note the inline: argument below (if unset, it defaults to CssAssetInline.none).
+  // If set to a value other than CssAssetInline.none, it will inline relative url(...)
+  // expressions that may no longer work when the CSS is no longer being loaded from
+  // next to the urls it references.
+  // Valid values are CssAssetInline.all (inlines *all* url elements) and
+  // CssAssetInline.only(['a', 'b']) (inlines only the urls in the given list).
+  inline: CssAssetInline.all,
+);
 ```
 
-The same thing can be done for binary assets:
-
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-
-    assets:
-    - name: binary-asset
-      default: some-file.bin
-      loader: binary
-```
+These can also be used from `index.dart`, but it also contains extra functionality:
 
 ```dart
-import 'package:aspen_assets/aspen_assets.dart' as aspen;
+import 'package:my_package/assets.dart' as assets;
 
-void main() {
-  List<int> binaryData = aspen.loadBinary('binary-asset');
+void main() async {
+  // A JsAsset and CssAsset are subclasses of TextAsset, so you can still use the text
+  // property:
+  String myJsAssetString = assets.myJsAsset.text;
+
+  // However, they have some extra bonuses:
+
+  // The JavaScript inside a JsAsset can be run in three ways: eval, evalSync, and evalAsync:
+  //  - evalSync({dynamic scope, bool ddcAvoidMisdetect = true}) will run the JavaScript
+  //    syncronously and return whatever result it may have. You can pass a custom scope to be
+  //    used as the value of 'this' via the scope: argument. In addition, ddcAvoidMisdetect
+  //    will use monkey-patching to avoid JavaScript code from thinking it's running in a
+  //    CommonJS environment when using DDC rather than a browser.
+  //  - evalAsync() will run the JavaScript asyncronously, returning a future that will complete
+  //    once the code runs. You cannot check whether or not the code succeeded, nor can you
+  //    get a result value. In addition, ddcAvoidMisdetect is impossible to emulate.
+  //  - eval() will pick either evalSync() or evalAsync(), depending on whether or not
+  //    ddcAvoidMisdetect is needed. It returns a future that either completes immediately
+  //    (if the former is picked) or once the JS is run (if the latter is picked).
+
+  // In general you'll want to use eval(), unless you have some other requirements.
+  await assets.myJsAsset.eval();
+
+  // The CSS inside a CssAsset can be globally applied to the entire document using the
+  // apply method.
+  assets.myCssAsset.apply;
 }
 ```
 
-Some loaders can take options. Well, right now it's only the CSS loader. It can take
-an *inline* option specifying whether or not to inline assets. For instance, given
-`inline-demo.css`:
+## Changes from 0.2
 
-```css
-* {
-  something: url('something');
-  something-else: url('something-else');
-}
-```
+...everything.
 
-You can use *inline* to specify some assets to inline:
+- The entire method of declaring assets has changed from a .yml file to a .dart file.
+- Dart code is now generated, rather than JavaScript code. This allows you to import assets
+  directly into your Dart code, and it also makes tree shaking far more effective.
 
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-
-    assets:
-    - name: inline-demo-1
-      default: inline-demo.css
-      options:
-        # inline: true means that everything will be inlined.
-        inline: true
-
-    - name: inline-demo-2
-      default: inline-demo.css
-      options:
-        # You can also pass a list of paths to be inlined.
-        inline: [something-else]
-
-    - name: inline-demo-3
-      default: inline-demo.css
-      # If not specified, the default value of inline is false, meaning nothing will ever be inlined.
-```
-
-### Multiple output files
-
-You can split assets into multiple different files based on their loader:
-
-```yaml
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-      text: web/text.js
-
-    assets:
-    - dev: node_modules/vue/dist/vue.js
-      prod: node_modules/vue/dist/vue.min.js
-    - name: material-css
-      dev: node_modules/material-design-lite/material.css
-      prod: node_modules/material-design-lite/material.min.css
-    - name: eye-octicon
-      default: node_modules/octicons/eye.svg
-      loader: text
-```
-
-Here, all the assets will be placed in `web/vendor.js`, except for assets using the
-`text` loader, which will be placed in `web/text.js`.
-
-What if you have two files using the same loader that should be placed in different
-output files? You can use loader aliases for that:
-
-```yaml
-loader-aliases:
-  svg: text
-
-targets:
-  default:
-    outputs:
-      default: web/vendor.js
-      text: web/text.js
-      svg: web/svg.js
-
-    assets:
-    - dev: node_modules/vue/dist/vue.js
-      prod: node_modules/vue/dist/vue.min.js
-    - name: material-css
-      dev: node_modules/material-design-lite/material.css
-      prod: node_modules/material-design-lite/material.min.css
-    - name: eye-octicon
-      default: node_modules/octicons/eye.svg
-      loader: svg
-    - name: readme
-      default: README.md
-      loader: text
-```
-
-Here, a loader alias *svg* is created for the *text* loader. Now, *svg* is treated as if
-it were its own loader, so anything redirected to this loader can be sent to a different
-output file.
+You're best off reading this entire README first, then manually moving over from aspen.yml to
+a .dart file.

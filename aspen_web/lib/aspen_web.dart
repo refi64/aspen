@@ -70,7 +70,7 @@ class JsAsset extends TextAsset {
   /// more info. Otherwise, [evalAsync] is used.
   Future eval() async {
     dynamic define = getProperty(_window, 'define');
-    if (define != null && getProperty(define, 'and') != null) {
+    if (define != null && getProperty(define, 'amd') != null) {
       evalSync();
     } else {
       await evalAsync();
@@ -87,7 +87,7 @@ class CssAssetInline {
   const CssAssetInline._all(this.inlineAll): inlineOnly = const <String>[];
 
   /// Only inline URIs in the given list.
-  CssAssetInline.only(this.inlineOnly): inlineAll = false;
+  const CssAssetInline.only(this.inlineOnly): inlineAll = false;
 
   /// Inline all URIs.
   static const all = CssAssetInline._all(true);
