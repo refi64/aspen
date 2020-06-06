@@ -4,7 +4,9 @@ import 'package:aspen/aspen.dart';
 import 'package:z85/z85.dart';
 
 /// An asset containing plain text.
-@LoadableAsset(url: 'package:aspen_generator/src/default_loaders.dart', loader: 'TextLoader')
+@LoadableAsset(
+    url: 'package:aspen_generator/src/default_loaders.dart',
+    loader: 'TextLoader')
 class TextAsset {
   final String text;
 
@@ -16,8 +18,10 @@ class TextAsset {
 /// and it includes itself.
 ///
 /// The decoded data can be accessed via [decode()].
-@LoadableAsset(url: 'package:aspen_generator/src/default_loaders.dart', loader: 'BinaryLoader')
-class BinaryAsset{
+@LoadableAsset(
+    url: 'package:aspen_generator/src/default_loaders.dart',
+    loader: 'BinaryLoader')
+class BinaryAsset {
   /// The z85-encoded data as a string.
   final String encoded;
 
@@ -33,7 +37,7 @@ class BinaryAsset{
 
 /// An asset containing Json data. The data can be parsed via [json()].
 class JsonAsset extends TextAsset {
-  const JsonAsset({String text}): super(text: text);
+  const JsonAsset({String text}) : super(text: text);
 
   /// Parse and return the json object.
   dynamic json() => convert.json.decode(text);

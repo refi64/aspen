@@ -1,12 +1,12 @@
 name: aspen_playground
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+  sdk: ">=2.8.0 <3.0.0"
 dependencies:
   aspen: any
   aspen_assets: any
   aspen_web: any
 dev_dependencies:
-  aspen_generator: any
+  aspen_builder: any
   build_runner: any
   build_web_compilers: any
 dependency_overrides:
@@ -14,7 +14,7 @@ dependency_overrides:
     path: ../aspen
   aspen_assets:
     path: ../aspen_assets
-  aspen_generator:
-    path: ../aspen_generator
+  aspen_builder:
+    path: ../aspen_builder
   aspen_web:
     path: ../aspen_web

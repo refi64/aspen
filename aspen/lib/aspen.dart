@@ -7,5 +7,5 @@ class LoadableAsset {
 class Asset {
   final String path, releasePath;
 
-  const Asset(this.path, {String release}): releasePath = release;
+  const Asset(this.path, {String release}) : releasePath = release;
 }

@@ -6,12 +6,16 @@ import '../loader.dart';
 import 'default_loaders/css_loader.dart';
 
 class TextLoader implements Loader {
-  Future<String> load(LoaderContext ctx, AssetId asset, ConstantReader options) =>
-    ctx.buildStep.readAsString(asset);
+  @override
+  Future<String> load(
+          LoaderContext ctx, AssetId asset, ConstantReader options) =>
+      ctx.buildStep.readAsString(asset);
 }
 
 class BinaryLoader implements Loader {
-  Future<String> load(LoaderContext ctx, AssetId asset, ConstantReader options) async {
+  @override
+  Future<String> load(
+      LoaderContext ctx, AssetId asset, ConstantReader options) async {
     var bytes = List<int>.from(await ctx.buildStep.readAsBytes(asset));
     var padding = bytes.length % 4;
     if (padding == 0) {

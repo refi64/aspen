@@ -27,36 +27,12 @@ dependencies:
   aspen_assets: ^0.3.0
   aspen_web: ^0.3.0
 dev_dependencies:
-  aspen_generator: ^0.3.0
-```
-
-In addition, by default `package:build` only allows you to use assets from a [pre-defined
-whitelist of directories](https://github.com/dart-lang/build/blob/build-v1.1.0/build_runner_core/lib/src/generate/options.dart#L19-L31).
-If you want others, you'll have to add them manually by placing this in `build.yaml`:
-
-```yaml
-targets:
-  aspen_playground:
-    sources:
-      include:
-        # Here's the default whitelist
-        - 'benchmark/**'
-        - 'bin/**'
-        - 'example/**'
-        - 'lib/**'
-        - 'test/**'
-        - 'tool/**'
-        - 'web/**'
-        - 'pubspec.yaml'
-        - 'pubspec.lock'
-
-        # And some custom paths we added
-        - 'node_modules/**'
+  aspen_builder: ^0.3.0
 ```
 
 ## Usage
 
-### Workings
+### The idea
 
 The basic idea of how Aspen works is that you create a `.dart` file, containing `@Asset`
 annotations. Aspen will process this file and create a `.g.dart` file containing the
@@ -172,6 +148,21 @@ void main() async {
   assets.myCssAsset.apply;
 }
 ```
+
+### Using with JavaScript package managers
+
+By default `package:build` only allows you to use assets from a [pre-defined
+whitelist of directories](https://github.com/dart-lang/build/blob/build-v1.1.0/build_runner_core/lib/src/generate/options.dart#L19-L31). Therefore, aspen won't be able to read anything from e.g. a node_modules directory.
+
+The easiest workaround is to save the assets into the `assets` directory, which *is* whitelisted. For instance,
+with yarn, create a `.yarnrc` containing:
+
+```
+--*.modules-folder assets/node_modules
+```
+
+Then, whenever you run `yarn`, the modules will be saved to `assets/node_modules`, which will be picked up by `build`
+because it's in the whitelisted `assets` directory.
 
 ## Changes from 0.2
 

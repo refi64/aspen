@@ -20,6 +20,7 @@ class _UrlEmbedVisitor extends Visitor {
 
   _UrlEmbedVisitor(this.ctx, this.asset, this.inline);
 
+  @override
   void visitUriTerm(UriTerm node) {
     futures.add(visitUriTermAsync(node));
   }
@@ -45,7 +46,8 @@ class _UrlEmbedVisitor extends Visitor {
 
     var target = AssetId.resolve(node.value, from: asset);
     if (!await ctx.buildStep.canRead(target)) {
-      ctx.error(node.span.message('target of URI does not exist'), ownLine: true);
+      ctx.error(node.span.message('target of URI does not exist'),
+          ownLine: true);
       return Future.value();
     }
 
@@ -61,17 +63,21 @@ class _UrlEmbedVisitor extends Visitor {
   }
 }
 
-
 class CssLoader extends TextLoader {
-  Future<String> load(LoaderContext ctx, AssetId asset, ConstantReader options) async {
+  @override
+  Future<String> load(
+      LoaderContext ctx, AssetId asset, ConstantReader options) async {
     var inlineOption = options.read('inline');
     var inlineAll = false;
     var inlineOnly = <String>[];
 
     if (!inlineOption.isNull) {
       inlineAll = inlineOption.read('inlineAll').boolValue;
-      inlineOnly = inlineOption.read('inlineOnly').listValue
-                    .map((x) => x.toStringValue()).toList();
+      inlineOnly = inlineOption
+          .read('inlineOnly')
+          .listValue
+          .map((x) => x.toStringValue())
+          .toList();
     }
 
     var styleString = await ctx.buildStep.readAsString(asset);

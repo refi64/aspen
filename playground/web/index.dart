@@ -1,13 +1,13 @@
 // import 'package:aspen_assets/aspen_assets.dart' as aspen;
 // import 'dart:html';
 
-import 'dart:convert';
-
 import 'package:aspen_playground/assets.dart';
 import 'package:aspen_web/aspen_web.dart';
 
 void main() {
-  JsAsset(text: 'console.log("loading...")').evalAsync().then((_) => print('evalAsync done'));
+  JsAsset(text: 'console.log("loading...")')
+      .evalAsync()
+      .then((_) => print('evalAsync done'));
   print('after evalAsync');
 
   jqueryReadme.text.substring(0);
