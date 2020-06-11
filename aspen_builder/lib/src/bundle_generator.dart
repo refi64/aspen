@@ -60,7 +60,7 @@ class BundleGenerator extends GeneratorForAnnotation<Asset> {
     }
 
     error(variableElement,
-        'Asset type ${type.getDisplayString()} has no @LoadableAsset annotation');
+        'Asset type ${type.displayName} has no @LoadableAsset annotation');
     return null;
   }
 
@@ -125,6 +125,6 @@ class BundleGenerator extends GeneratorForAnnotation<Asset> {
     }
 
     return Future.value(
-        "const String ${variableElement.name}\$content = r'''${content}''';");
+        "const String _${variableElement.name}\$content = r'''${content}''';");
   }
 }

@@ -46,24 +46,24 @@ Assume this all goes in `lib/assets.dart` in `my_package`:
 import 'package:aspen/aspen.dart';
 import 'package:aspen_assets/aspen_assets.dart';
 
-// Here, we import the to-be-generated assets file, which contains the actual asset content.
-import 'assets.g.dart' as assets_g;
+// Here, we load the to-be-generated assets file, which contains the actual asset content.
+part 'assets.g.dart';
 
 // @Asset is an annotation from package:aspen that marks the asset to be packed.
 @Asset('asset:my_package/web/my-asset.txt')
 // We create a const (it must be const!) value that holds the generated asset content.
-const myTextAsset = TextAsset(text: assets_g.myTextAsset$content);
+const myTextAsset = TextAsset(text: _myTextAsset$content);
 // aspen_generator will use the value (here, it's TextAsset(...)) to determine what type of
 // asset to use.
 
 // We can also provide a different path to be used in release mode:
-@Aspen('asset:my_package/web/my-asset.bin', release: 'asset:my_package/web/my-assets.rel.bin')
+@Asset('asset:my_package/web/my-asset.bin', release: 'asset:my_package/web/my-assets.rel.bin')
 // Here, instead, a BinaryAsset is used.
-const myBinAsset = BinaryAsset(encoded: assets_g.myBinAsset$content);
+const myBinAsset = BinaryAsset(encoded: _myBinAsset$content);
 
 // You can also have JSON assets (JsonAsset is a subclass of TextAsset).
-@Aspen('asset:my_package/web/my-asset.json')
-const myJsonAsset = JsonAsset(text: assets_g.myJsonAsset$content);
+@Asset('asset:my_package/web/my-asset.json')
+const myJsonAsset = JsonAsset(text: _myJsonAsset$content);
 ```
 
 Then, it can be accessed from our main file:

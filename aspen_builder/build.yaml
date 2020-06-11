@@ -2,9 +2,10 @@ builders:
   bundle_builder:
     import: 'package:aspen_builder/builder.dart'
     builder_factories: [bundleBuilder]
-    build_extensions: {'.dart': ['.g.dart']}
-    auto_apply: root_package
-    build_to: source
+    build_extensions: {'.dart': ['.aspen.g.dart']}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ['source_gen|combining_builder']
     defaults:
       release_options:
         release_asset: true
