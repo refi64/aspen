@@ -1,3 +1,7 @@
+# 0.3.0
+
+- Revamp...everything.
+
 # 0.2.2
 
 - Stupid README fix.

@@ -1,7 +1,6 @@
 name: aspen
 version: 0.3.0
 description: A modern, easy-to-use asset packer
-author: Ryan Gonzalez <rymg19@gmail.com>
 homepage: https://github.com/refi64/aspen
 
 environment:
