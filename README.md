@@ -8,14 +8,14 @@ as it now integrates more closely with `package:build` and supports incremental 
 ## Installation
 
 At minimum, you'll need the `aspen` and `aspen_assets` packages, as well as a dev dependency on
-`aspen_generator`:
+`aspen_builder`:
 
 ```yaml
 dependencies:
   aspen: ^0.3.0
   aspen_assets: ^0.3.0
 dev_dependencies:
-  aspen_generator: ^0.3.0
+  aspen_builder: ^0.3.0
 ```
 
 If you want to embed web-related assets (e.g. JavaScript and CSS), you can add `aspen_web`, but
@@ -53,7 +53,7 @@ part 'assets.g.dart';
 @Asset('asset:my_package/web/my-asset.txt')
 // We create a const (it must be const!) value that holds the generated asset content.
 const myTextAsset = TextAsset(text: _myTextAsset$content);
-// aspen_generator will use the value (here, it's TextAsset(...)) to determine what type of
+// aspen_builder will use the value (here, it's TextAsset(...)) to determine what type of
 // asset to use.
 
 // We can also provide a different path to be used in release mode:
