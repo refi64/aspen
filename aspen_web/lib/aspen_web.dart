@@ -98,7 +98,7 @@ class CssAssetInline {
 /// An asset containing a CSS stylesheet. URIs referenced from it can be inlined via the
 /// [inline] constructor parameter. The CSS can be globally applied via [apply].
 @LoadableAsset(
-    url: 'package:aspen_generator/src/default_loaders.dart',
+    url: 'package:aspen_builder/src/default_loaders.dart',
     loader: 'CssLoader')
 class CssAsset extends TextAsset {
   /// Takes on one of:

@@ -5,7 +5,7 @@ import 'package:z85/z85.dart';
 
 /// An asset containing plain text.
 @LoadableAsset(
-    url: 'package:aspen_generator/src/default_loaders.dart',
+    url: 'package:aspen_builder/src/default_loaders.dart',
     loader: 'TextLoader')
 class TextAsset {
   final String text;
@@ -19,7 +19,7 @@ class TextAsset {
 ///
 /// The decoded data can be accessed via [decode()].
 @LoadableAsset(
-    url: 'package:aspen_generator/src/default_loaders.dart',
+    url: 'package:aspen_builder/src/default_loaders.dart',
     loader: 'BinaryLoader')
 class BinaryAsset {
   /// The z85-encoded data as a string.
