@@ -28,7 +28,7 @@ void main() {
       expect(
           result,
           equals(
-              r"const String _textAsset$content = r'''content of textAsset.txt''';"));
+              r"const _textAsset$asset = AssetData(r'packageName|assets/textAsset.txt', r'''content of textAsset.txt''');"));
     });
 
     test('creates BinaryAsset', () async {
@@ -43,7 +43,7 @@ void main() {
       expect(
           result,
           equals(
-              r"const String _binaryAsset$content = r'''BzbxfazC)tvRGZ*A^n^qz/fVdzGC<W''';"));
+              r"const _binaryAsset$asset = AssetData(r'packageName|assets/binaryAsset.jpg', r'''BzbxfazC)tvRGZ*A^n^qz/fVdzGC<W''');"));
     });
 
     test('creates JsonAsset', () async {
@@ -57,9 +57,9 @@ void main() {
 
       expect(
           result,
-          equals(r"const String _jsonAsset$content = r'''["
+          equals(r"const _jsonAsset$asset = AssetData(r'packageName|assets/jsonAsset.json', r'''["
               '"jsonAsset"'
-              ": true]''';"));
+              ": true]''');"));
     });
 
     test('creates JsAsset', () async {
@@ -71,7 +71,7 @@ void main() {
       final result = await generate(jsAsset, generator, buildStep);
 
       expect(result,
-          equals(r"const String _jsAsset$content = r'''let js = true;''';"));
+          equals(r"const _jsAsset$asset = AssetData(r'packageName|assets/jsAsset.js', r'''let js = true;''');"));
     });
 
     test('creates JsAsset with release version', () async {
@@ -87,7 +87,7 @@ void main() {
       expect(
           result,
           equals(
-              r"const String _jsAsset$content = r'''let releaseJs = true;''';"));
+              r"const _jsAsset$asset = AssetData(r'packageName|assets/jsAsset.min.js', r'''let releaseJs = true;''');"));
     });
 
     test('creates CssAsset', () async {
@@ -99,7 +99,7 @@ void main() {
       final result = await generate(cssAsset, generator, buildStep);
 
       expect(result,
-          equals(r"const String _cssAsset$content = r'''body {" '\n' "}''';"));
+          equals(r"const _cssAsset$asset = AssetData(r'packageName|assets/cssAsset.css', r'''body {" '\n' "}''');"));
     });
   });
 }
@@ -119,7 +119,7 @@ import 'package:aspen/aspen.dart';
 import 'package:aspen_assets/aspen_assets.dart';
 
 @Asset('asset:packageName/assets/textAsset.txt')
-const textAsset = TextAsset(text: _textAsset$content);
+const textAsset = TextAsset(_textAsset$asset);
 ''';
 
 final binaryAsset = r'''
@@ -127,7 +127,7 @@ import 'package:aspen/aspen.dart';
 import 'package:aspen_assets/aspen_assets.dart';
 
 @Asset('asset:packageName/assets/binaryAsset.jpg')
-const binaryAsset = BinaryAsset(encoded: _binaryAsset$content);
+const binaryAsset = BinaryAsset(_binaryAsset$asset);
 ''';
 
 final jsonAsset = r'''
@@ -135,7 +135,7 @@ import 'package:aspen/aspen.dart';
 import 'package:aspen_assets/aspen_assets.dart';
 
 @Asset('asset:packageName/assets/jsonAsset.json')
-const jsonAsset = JsonAsset(text: _jsonAsset$content);
+const jsonAsset = JsonAsset(_jsonAsset$asset);
 ''';
 
 final jsAsset = r'''
@@ -143,7 +143,7 @@ import 'package:aspen/aspen.dart';
 import 'package:aspen_web/aspen_web.dart';
 
 @Asset('asset:packageName/assets/jsAsset.js')
-const jsAsset = JsAsset(text: _jsAsset$content);
+const jsAsset = JsAsset(_jsAsset$asset);
 ''';
 
 final cssAsset = r'''
@@ -151,7 +151,7 @@ import 'package:aspen/aspen.dart';
 import 'package:aspen_web/aspen_web.dart';
 
 @Asset('asset:packageName/assets/cssAsset.css')
-const cssAsset = CssAsset(text: _cssAsset$content, inline: CssAssetInline.all);
+const cssAsset = CssAsset(_cssAsset$asset, inline: CssAssetInline.all);
 ''';
 
 final releaseVersionOfAsset = r'''
@@ -159,5 +159,5 @@ import 'package:aspen/aspen.dart';
 import 'package:aspen_web/aspen_web.dart';
 
 @Asset('asset:packageName/assets/jsAsset.js', release: 'asset:packageName/assets/jsAsset.min.js')
-const jsAsset = JsAsset(text: _jsAsset$content);
+const jsAsset = JsAsset(_jsAsset$asset);
 ''';

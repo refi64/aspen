@@ -1,5 +1,5 @@
 name: aspen_builder
-version: 0.3.0
+version: 0.4.0
 description: A modern, easy-to-use asset packer (builder package)
 homepage: https://github.com/refi64/aspen
 
@@ -15,8 +15,8 @@ dependencies:
   z85: ^0.1.0
 
 dev_dependencies:
-  aspen_assets: ^0.3.0
-  aspen_web: ^0.3.0
+  aspen_assets: ^0.4.0
+  aspen_web: ^0.4.0
   pedantic: ^1.9.0
   build_test: ^1.3.0
   mockito: ^4.1.3

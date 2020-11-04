@@ -13,9 +13,9 @@ At minimum, you'll need the `aspen` and `aspen_assets` packages, as well as a de
 ```yaml
 dependencies:
   aspen: ^0.3.0
-  aspen_assets: ^0.3.0
+  aspen_assets: ^0.4.0
 dev_dependencies:
-  aspen_builder: ^0.3.0
+  aspen_builder: ^0.4.0
 ```
 
 If you want to embed web-related assets (e.g. JavaScript and CSS), you can add `aspen_web`, but
@@ -24,10 +24,10 @@ this will make your project web-only:
 ```yaml
 dependencies:
   aspen: ^0.3.0
-  aspen_assets: ^0.3.0
-  aspen_web: ^0.3.0
+  aspen_assets: ^0.4.0
+  aspen_web: ^0.4.0
 dev_dependencies:
-  aspen_builder: ^0.3.0
+  aspen_builder: ^0.4.0
 ```
 
 ## Usage
@@ -52,18 +52,18 @@ part 'assets.g.dart';
 // @Asset is an annotation from package:aspen that marks the asset to be packed.
 @Asset('asset:my_package/web/my-asset.txt')
 // We create a const (it must be const!) value that holds the generated asset content.
-const myTextAsset = TextAsset(text: _myTextAsset$content);
+const myTextAsset = TextAsset(_myTextAsset$asset);
 // aspen_builder will use the value (here, it's TextAsset(...)) to determine what type of
 // asset to use.
 
 // We can also provide a different path to be used in release mode:
 @Asset('asset:my_package/web/my-asset.bin', release: 'asset:my_package/web/my-assets.rel.bin')
 // Here, instead, a BinaryAsset is used.
-const myBinAsset = BinaryAsset(encoded: _myBinAsset$content);
+const myBinAsset = BinaryAsset(_myBinAsset$asset);
 
 // You can also have JSON assets (JsonAsset is a subclass of TextAsset).
 @Asset('asset:my_package/web/my-asset.json')
-const myJsonAsset = JsonAsset(text: _myJsonAsset$content);
+const myJsonAsset = JsonAsset(_myJsonAsset$asset);
 ```
 
 Then, it can be accessed from our main file:
@@ -99,12 +99,12 @@ import 'assets.g.dart' as assets_g;
 // A JsAsset (subclass of TextAsset) holds JavaScript code;
 @Asset('asset:my_package/node_modules/vue/dist/vue.js',
        release: 'asset:my_package/node_modules/vue/dist/vue.min.js')
-const myJsAsset = JsAsset(text: assets_g.myJsAsset$content);
+const myJsAsset = JsAsset(assets_g.myJsAsset$asset);
 
 // A CssAsset (again, subclass of TextAsset holds a CSS style sheet).
 @Asset('asset:my_package/web/my-asset.css')
 const myCssAsset = CssAsset(
-  text: assets_g.myCssAsset$content,
+  assets_g.myCssAsset$asset,
   // Note the inline: argument below (if unset, it defaults to CssAssetInline.none).
   // If set to a value other than CssAssetInline.none, it will inline relative url(...)
   // expressions that may no longer work when the CSS is no longer being loaded from
