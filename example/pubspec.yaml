@@ -1,4 +1,5 @@
 name: aspen_playground
+publish_to: none
 environment:
   sdk: ">=2.8.0 <3.0.0"
 dependencies:
