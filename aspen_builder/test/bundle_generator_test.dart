@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:aspen_builder/src/bundle_generator.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
+import 'package:glob/glob.dart';
 import 'package:mockito/mockito.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
@@ -57,7 +58,8 @@ void main() {
 
       expect(
           result,
-          equals(r"const _jsonAsset$asset = AssetData(r'packageName|assets/jsonAsset.json', r'''["
+          equals(
+              r"const _jsonAsset$asset = AssetData(r'packageName|assets/jsonAsset.json', r'''["
               '"jsonAsset"'
               ": true]''');"));
     });
@@ -70,19 +72,21 @@ void main() {
 
       final result = await generate(jsAsset, generator, buildStep);
 
-      expect(result,
-          equals(r"const _jsAsset$asset = AssetData(r'packageName|assets/jsAsset.js', r'''let js = true;''');"));
+      expect(
+          result,
+          equals(
+              r"const _jsAsset$asset = AssetData(r'packageName|assets/jsAsset.js', r'''let js = true;''');"));
     });
 
     test('creates JsAsset with release version', () async {
       final assetId =
-      AssetId.resolve('asset:packageName/assets/jsAsset.min.js');
+          AssetId.resolve('asset:packageName/assets/jsAsset.min.js');
       when(buildStep.canRead(assetId)).thenAnswer((_) => Future.value(true));
       when(buildStep.readAsString(assetId))
           .thenAnswer((_) => Future.value('let releaseJs = true;'));
 
       final result =
-      await generate(releaseVersionOfAsset, generator, buildStep);
+          await generate(releaseVersionOfAsset, generator, buildStep);
 
       expect(
           result,
@@ -98,10 +102,96 @@ void main() {
 
       final result = await generate(cssAsset, generator, buildStep);
 
-      expect(result,
-          equals(r"const _cssAsset$asset = AssetData(r'packageName|assets/cssAsset.css', r'''body {" '\n' "}''');"));
+      expect(
+          result,
+          equals(
+              r"const _cssAsset$asset = AssetData(r'packageName|assets/cssAsset.css', r'''body {"
+              '\n'
+              "}''');"));
+    });
+
+    group('creates DirAsset', () {
+
+      test('with TextAssets', () async {
+        mockFindAssets(buildStep, 'asset:packageName/assets/textAsset.txt',
+            'content of textAsset.txt');
+
+        final result = await generate(textAssetDir, generator, buildStep);
+
+        expect(result, equals('''
+enum MyAssets {
+  textAsset\$txt
+}
+const _myAssets\$asset = {
+  MyAssets.textAsset\$txt: TextAsset(AssetData(r'packageName|assets/textAsset.txt', r\'\'\'content of textAsset.txt\'\'\'))
+};'''));
+      });
+
+      test('with TextAssets without wildcards in path defaults to path/*.*',
+          () async {
+        mockFindAssets(buildStep, 'asset:packageName/assets/textAsset.txt',
+            'content of textAsset.txt');
+
+        final result =
+            await generate(textAssetDirWithoutWildcards, generator, buildStep);
+
+        expect(result, equals('''
+enum MyAssets {
+  textAsset\$txt
+}
+const _myAssets\$asset = {
+  MyAssets.textAsset\$txt: TextAsset(AssetData(r'packageName|assets/textAsset.txt', r\'\'\'content of textAsset.txt\'\'\'))
+};'''));
+      });
+
+      test('sanitizes the enum value identifier', () async {
+        mockFindAssets(
+            buildStep,
+            'asset:packageName/assets/textAsset Final 2020-11-05 (Copy 3).txt(1)',
+            'content of textAsset.txt');
+
+        final result = await generate(textAssetDir, generator, buildStep);
+
+        expect(result, equals('''
+enum MyAssets {
+  textAssetFinal20201105Copy3\$txt1
+}
+const _myAssets\$asset = {
+  MyAssets.textAssetFinal20201105Copy3\$txt1: TextAsset(AssetData(r'packageName|assets/textAsset Final 2020-11-05 (Copy 3).txt(1)', r\'\'\'content of textAsset.txt\'\'\'))
+};'''));
+      });
+
+      test('handles files without extension correct', () async {
+        mockFindAssets(buildStep, 'asset:packageName/assets/textAsset',
+            'content of textAsset.txt');
+
+        final result = await generate(textAssetDir, generator, buildStep);
+
+        expect(result, equals('''
+enum MyAssets {
+  textAsset
+}
+const _myAssets\$asset = {
+  MyAssets.textAsset: TextAsset(AssetData(r'packageName|assets/textAsset', r\'\'\'content of textAsset.txt\'\'\'))
+};'''));
+      });
     });
   });
+}
+
+void mockFindAssets(BuildStep buildStep, String assetUri, String content) {
+  final assetId = AssetId.resolve(assetUri);
+  when(buildStep.findAssets(any)).thenAnswer((realInvocation) {
+    final glob = realInvocation.positionalArguments[0];
+    if (glob is Glob && glob.pattern == 'assets/*.*') {
+      return Stream.value(assetId);
+    }
+    return Stream.empty();
+  });
+  when(buildStep.inputId).thenReturn(assetId);
+  when(buildStep.canRead(assetId)).thenAnswer((_) => Future.value(true));
+  when(buildStep.readAsString(assetId))
+      .thenAnswer((_) => Future.value(content));
 }
 
 Future<String> generate(
@@ -160,4 +250,20 @@ import 'package:aspen_web/aspen_web.dart';
 
 @Asset('asset:packageName/assets/jsAsset.js', release: 'asset:packageName/assets/jsAsset.min.js')
 const jsAsset = JsAsset(_jsAsset$asset);
+''';
+
+final textAssetDir = r'''
+import 'package:aspen/aspen.dart';
+import 'package:aspen_assets/aspen_assets.dart';
+
+@Asset('asset:packageName/assets/*.*')
+const myAssets = DirAsset<TextAsset, MyAssets>(_dirAsset$asset);
+''';
+
+final textAssetDirWithoutWildcards = r'''
+import 'package:aspen/aspen.dart';
+import 'package:aspen_assets/aspen_assets.dart';
+
+@Asset('asset:packageName/assets')
+const myAssets = DirAsset<TextAsset, MyAssets>(_dirAsset$asset);
 ''';

@@ -6,7 +6,7 @@ import 'package:z85/z85.dart';
 /// An asset containing plain text.
 @LoadableAsset(
     url: 'package:aspen_builder/src/default_loaders.dart', loader: 'TextLoader')
-class TextAsset {
+class TextAsset implements FileAsset {
   final AssetData _data;
 
   const TextAsset(this._data);
@@ -23,7 +23,7 @@ class TextAsset {
 @LoadableAsset(
     url: 'package:aspen_builder/src/default_loaders.dart',
     loader: 'BinaryLoader')
-class BinaryAsset {
+class BinaryAsset implements FileAsset {
   final AssetData _data;
 
   const BinaryAsset(this._data);
@@ -52,4 +52,16 @@ class AssetData {
   final String assetId;
   final String content;
   const AssetData(this.assetId, this.content);
+}
+
+abstract class FileAsset {
+  // marker interface
+}
+
+/// An asset containing all files selected by the glob in [@Asset].
+/// Limited to the current package.
+class DirAsset<S extends FileAsset, T> {
+  final Map<T, S> _fileAssets;
+  const DirAsset(Map<T, S> fileAssets) : _fileAssets = fileAssets;
+  S operator[](T assetKey) => _fileAssets[assetKey];
 }

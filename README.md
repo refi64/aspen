@@ -64,6 +64,12 @@ const myBinAsset = BinaryAsset(_myBinAsset$asset);
 // You can also have JSON assets (JsonAsset is a subclass of TextAsset).
 @Asset('asset:my_package/web/my-asset.json')
 const myJsonAsset = JsonAsset(_myJsonAsset$asset);
+
+// You can also include multiple files in a directoy, but it's limited to the current package.
+// the enum `AllTextFiles` will be created from the filenames, so there are some limits to
+// allowed names (e.g. no leading numbers). Special characters get removed.
+@Asset('asset:my_package/web/*.txt')
+const allTextFiles = DirAsset<TextAsset, AllTextFiles>(_allTextFiles$asset);
 ```
 
 Then, it can be accessed from our main file:
@@ -82,6 +88,10 @@ void main() {
 
   // A JSON asset can be parsed via the json() method.
   dynamic myJsonAssetParseJson = assets.myJsonAsset.json();
+  
+  // The content of a dir asset can be retrieved via the `[]` operator
+  String myTextAssetFromAllTextFiles = assets.allTextFiles[AllTextFiles.myasset$txt].text;
+
 }
 ```
 

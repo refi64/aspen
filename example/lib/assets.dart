@@ -21,3 +21,6 @@ const jquery = JsAsset(_jquery$asset);
 
 @Asset('$assetsPrefix/material-design-icons/iconfont/material-icons.css')
 const icons = CssAsset(_icons$asset, inline: CssAssetInline.all);
+
+@Asset('$assetsPrefix/octicons/build/svg/git-*.svg')
+const gitIcons = DirAsset<TextAsset, GitIcons>(_gitIcons$asset);
