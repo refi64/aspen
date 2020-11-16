@@ -1,3 +1,11 @@
+# 0.4.0
+
+- assets now contain their id
+- the declaration of an asset changed (for all types of assets):
+    - 0.3.0: `const myAsset = TextAsset(text: _myAsset$content);` 
+    - 0.4.0: `const myAsset = TextAsset(_myAsset$asset);` 
+- added new asset type `DirAsset` which adds all (or selected) files in a given directory
+
 # 0.3.0
 
 - Revamp...everything.
