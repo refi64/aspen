@@ -17,10 +17,7 @@ class BinaryLoader implements Loader {
   Future<String> load(
       LoaderContext ctx, AssetId asset, ConstantReader options) async {
     var bytes = List<int>.from(await ctx.buildStep.readAsBytes(asset));
-    var padding = bytes.length % 4;
-    if (padding == 0) {
-      padding = 4;
-    }
+    var padding = 4 - (bytes.length % 4);
 
     bytes.addAll(List<int>.filled(padding - 1, 0));
     bytes.add(padding);
