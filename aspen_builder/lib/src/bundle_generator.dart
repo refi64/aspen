@@ -121,8 +121,9 @@ class BundleGenerator extends GeneratorForAnnotation<Asset> {
       final enumValues = <String, AssetData>{};
       final enumValueSanitzerRegExp = RegExp('[^a-zA-Z0-9]');
 
-      final assetIds = buildStep.findAssets(Glob(assetDirPath));
-      await for (final assetId in assetIds) {
+      final assetIds = (await buildStep.findAssets(Glob(assetDirPath)).toList())
+        ..sort();
+      for (final assetId in assetIds) {
         var enumValue =
             '${p.basenameWithoutExtension(assetId.path).replaceAll(enumValueSanitzerRegExp, '')}';
         final extension = p.extension(assetId.path);
@@ -139,7 +140,7 @@ enum $enumName {
   ${enumValues.keys.join(', ')}
 }
 const _${variableElement.name}\$asset = {
-  ${enumValues.entries.map((entry) => '$enumName.${entry.key}: ${assetType.element.name}(AssetData(r\'${entry.value.assetId}\', r\'\'\'${entry.value.content}\'\'\'))').join(',\n')}
+  ${enumValues.entries.map((entry) => '$enumName.${entry.key}: ${assetType.element.name}(AssetData(r\'${entry.value.assetId}\', r\'\'\'${entry.value.content}\'\'\'))').join(',\n  ')}
 };
 ''');
     } else {

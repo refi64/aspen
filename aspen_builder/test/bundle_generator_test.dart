@@ -111,7 +111,6 @@ void main() {
     });
 
     group('creates DirAsset', () {
-
       test('with TextAssets', () async {
         mockFindAssets(buildStep, 'asset:packageName/assets/textAsset.txt',
             'content of textAsset.txt');
@@ -173,6 +172,39 @@ enum MyAssets {
 }
 const _myAssets\$asset = {
   MyAssets.textAsset: TextAsset(AssetData(r'packageName|assets/textAsset', r\'\'\'content of textAsset.txt\'\'\'))
+};'''));
+      });
+
+      test('sorts enum values generated from files by name', () async {
+        final assetId1 =
+            AssetId.resolve('asset:packageName/assets/level900.txt');
+        final assetId2 =
+            AssetId.resolve('asset:packageName/assets/level100.txt');
+        final content = '';
+        when(buildStep.findAssets(any)).thenAnswer((realInvocation) {
+          final glob = realInvocation.positionalArguments[0];
+          if (glob is Glob && glob.pattern == 'assets/*.*') {
+            return Stream.fromIterable([assetId1, assetId2]);
+          }
+          return Stream.empty();
+        });
+        when(buildStep.inputId).thenReturn(assetId1);
+        when(buildStep.canRead(assetId1)).thenAnswer((_) => Future.value(true));
+        when(buildStep.readAsString(assetId1))
+            .thenAnswer((_) => Future.value(content));
+        when(buildStep.canRead(assetId2)).thenAnswer((_) => Future.value(true));
+        when(buildStep.readAsString(assetId2))
+            .thenAnswer((_) => Future.value(content));
+
+        final result = await generate(textAssetDir, generator, buildStep);
+
+        expect(result, equals('''
+enum MyAssets {
+  level100\$txt, level900\$txt
+}
+const _myAssets\$asset = {
+  MyAssets.level100\$txt: TextAsset(AssetData(r'packageName|assets/level100.txt', r\'\'\'\'\'\')),
+  MyAssets.level900\$txt: TextAsset(AssetData(r'packageName|assets/level900.txt', r\'\'\'\'\'\'))
 };'''));
       });
     });
