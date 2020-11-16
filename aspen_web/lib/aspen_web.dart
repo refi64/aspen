@@ -20,7 +20,7 @@ int _jsCounter = 0;
 /// An asset containing JavaScript code. The code within can be executed via [eval],
 /// [evalSync], or [evalAsync].
 class JsAsset extends TextAsset {
-  const JsAsset({String text}) : super(text: text);
+  const JsAsset(AssetData data) : super(data);
 
   /// Syncronously evaluate the code, with the given [scope] (the top-level window is the
   /// default scope).
@@ -98,8 +98,7 @@ class CssAssetInline {
 /// An asset containing a CSS stylesheet. URIs referenced from it can be inlined via the
 /// [inline] constructor parameter. The CSS can be globally applied via [apply].
 @LoadableAsset(
-    url: 'package:aspen_generator/src/default_loaders.dart',
-    loader: 'CssLoader')
+    url: 'package:aspen_builder/src/default_loaders.dart', loader: 'CssLoader')
 class CssAsset extends TextAsset {
   /// Takes on one of:
   /// - [CssAssetInline.none] - Do not inline anything (the default).
@@ -107,8 +106,7 @@ class CssAsset extends TextAsset {
   /// - [CssAssetInline.only()] - Only inline URIs in the given list.
   final CssAssetInline inline;
 
-  const CssAsset({String text, this.inline = CssAssetInline.none})
-      : super(text: text);
+  const CssAsset(AssetData data, {this.inline = CssAssetInline.none}) : super(data);
 
   void apply() {
     var el = StyleElement();

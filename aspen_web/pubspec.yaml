@@ -1,5 +1,5 @@
 name: aspen_web
-version: 0.3.0
+version: 0.4.0
 description: A modern, easy-to-use asset packer (web package)
 homepage: https://github.com/refi64/aspen
 
@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   aspen: ^0.3.0
-  aspen_assets: ^0.3.0
+  aspen_assets: ^0.4.0
   js: ^0.6.1
 
 dev_dependencies:
